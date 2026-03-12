@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="LocalLatexRender.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="轻量 LaTeX 剪贴板渲染器">
+
+    <Window.SystemBackdrop>
+        <MicaBackdrop />
+    </Window.SystemBackdrop>
+
+    <Grid Padding="28" RowSpacing="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Spacing="6">
+            <TextBlock
+                FontSize="28"
+                FontWeight="SemiBold"
+                Text="轻量 LaTeX 剪贴板渲染器" />
+            <TextBlock
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Text="复制以 $...$ 或 $$...$$ 包裹的公式后，应用会自动生成透明 PNG，并把图片与原始文本同时写回剪贴板。"
+                TextWrapping="WrapWholeWords" />
+        </StackPanel>
+
+        <Border
+            Grid.Row="1"
+            Padding="20"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="20">
+            <Grid ColumnSpacing="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Spacing="10">
+                    <TextBlock
+                        FontSize="18"
+                        FontWeight="SemiBold"
+                        Text="后台自动转换" />
+                    <TextBlock
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="剪贴板监听开启后，会自动检测数学公式、调用本地 KaTeX 渲染，并将图片回写到系统剪贴板。"
+                        TextWrapping="WrapWholeWords" />
+                    <TextBlock
+                        x:Name="StatusTextBlock"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="正在初始化渲染器..."
+                        TextWrapping="WrapWholeWords" />
+                </StackPanel>
+
+                <StackPanel
+                    Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Spacing="10">
+                    <StackPanel Spacing="6">
+                        <TextBlock
+                            HorizontalAlignment="Right"
+                            FontSize="14"
+                            Text="输出缩放" />
+                        <ComboBox
+                            x:Name="RenderScaleComboBox"
+                            Width="132"
+                            HorizontalAlignment="Right"
+                            AutomationProperties.Name="输出缩放"
+                            SelectedIndex="0"
+                            ToolTipService.ToolTip="提高输出倍率可以生成更高 DPI 的公式图片，但文件尺寸也会随之增加。">
+                            <ComboBoxItem Content="2x" Tag="2" />
+                            <ComboBoxItem Content="3x" Tag="3" />
+                            <ComboBoxItem Content="4x" Tag="4" />
+                            <ComboBoxItem Content="5x" Tag="5" />
+                        </ComboBox>
+                    </StackPanel>
+
+                    <ToggleSwitch
+                        x:Name="AutoConvertToggle"
+                        HorizontalAlignment="Right"
+                        AutomationProperties.Name="启用自动转换"
+                        Header="启用自动转换"
+                        IsOn="True"
+                        OffContent="关闭"
+                        OnContent="开启"
+                        Toggled="AutoConvertToggle_Toggled"
+                        ToolTipService.ToolTip="开启后，检测到公式时会自动生成图片并保留原始 LaTeX 文本。" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2" ColumnSpacing="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Border
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="20">
+                <Grid RowSpacing="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Text="最近转换历史" />
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="仅保留最近 8 条成功转换记录，方便确认后台是否工作正常。"
+                            TextWrapping="WrapWholeWords" />
+                    </StackPanel>
+
+                    <ListView
+                        x:Name="HistoryListView"
+                        Grid.Row="1"
+                        AutomationProperties.Name="最近转换历史"
+                        IsItemClickEnabled="False"
+                        ItemsSource="{x:Bind HistoryItems, Mode=OneWay}"
+                        SelectionMode="None">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Padding="0,10" Spacing="4">
+                                    <TextBlock
+                                        MaxLines="3"
+                                        FontFamily="Cascadia Code"
+                                        Text="{Binding OriginalText}"
+                                        TextWrapping="WrapWholeWords" />
+                                    <StackPanel Orientation="Horizontal" Spacing="12">
+                                        <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Text="{Binding ModeText}" />
+                                        <TextBlock
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Text="{Binding TimestampText}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </Border>
+
+            <Canvas
+                Grid.Column="1"
+                Width="1"
+                Height="1"
+                IsHitTestVisible="False"
+                Opacity="0.01">
+                <WebView2
+                    x:Name="RendererWebView"
+                    Width="2800"
+                    Height="1600"
+                    Canvas.Left="-5000"
+                    Canvas.Top="0" />
+            </Canvas>
+        </Grid>
+    </Grid>
+</Window>

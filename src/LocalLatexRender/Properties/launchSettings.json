@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "LocalLatexRender (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "LocalLatexRender (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
