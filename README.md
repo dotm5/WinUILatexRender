@@ -29,14 +29,6 @@ dotnet build .\LocalLatexRender.sln -p:Platform=x64
 .\src\LocalLatexRender\bin\x64\Debug\net10.0-windows10.0.19041.0\win-x64\LocalLatexRender.exe
 ```
 
-## GitHub 推送前建议
-
-```powershell
-git remote add origin <your-github-repo-url>
-git status
-git commit -m "Initial project structure"
-git push -u origin main
-```
 
 更多目录说明见 [docs/repository-structure.md](./docs/repository-structure.md)。
 
